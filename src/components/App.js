@@ -41,10 +41,18 @@ export default class App extends React.Component {
   deleteItem = (type, id) => {
     this.setState(state => {
       const newItemsList = state[type].filter(item => item.id !== id);
-      return {
+      const itemsListWithoutCategory = state.items.map(item => ({...item}));
+      const afterDelete = {
         [type]: newItemsList,
         activeEntity: newItemsList[0] || null
       }
+      if (type === 'categories') {
+        itemsListWithoutCategory.forEach(item => {
+          if (item.category === id) item.category = null;
+        });
+        afterDelete.items = itemsListWithoutCategory;
+      }
+      return afterDelete
     }, () => {
       this.updateDB(type)
     });
